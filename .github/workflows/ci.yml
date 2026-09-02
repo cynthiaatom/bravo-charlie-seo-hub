@@ -33,6 +33,43 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # TEMPORARY M1 PREPARATION GATE. Remove before merge. Vite regenerates
+      # TanStack's route tree; Drizzle generates both dialect migration sets;
+      # Prettier then normalizes the generated and M1 source files. The artifact
+      # lets the ChatGPT GitHub workflow bring those deterministic outputs back
+      # into the feature branch before final verification.
+      - name: Generate route tree
+        run: pnpm vite build
+
+      - name: Generate database migrations
+        run: pnpm run db:generate
+
+      - name: Format generated outputs
+        run: pnpm run format:write
+
+      - name: Upload M1 generated outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: bravo-charlie-m1-generated
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            src/routeTree.gen.ts
+            src/bcseo
+            src/client/components/Sidebar.tsx
+            src/client/navigation/items.ts
+            src/db/bravo-charlie.schema.ts
+            src/db/bravo-charlie-schema-parity.test.ts
+            src/db/pg/bravo-charlie.schema.ts
+            src/routes/_app/clients.tsx
+            src/routes/api/wp
+            src/server/features/bravo-charlie
+            src/serverFunctions/bravo-charlie.ts
+            src/types/schemas/bravo-charlie.ts
+            docs/bravo-charlie-hub-m1.md
+            drizzle
+            drizzle-pg
+
       - name: Run CI checks
         run: pnpm run ci:check
 
