@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - feature/bravo-charlie-hub-m1
 
 concurrency:
   group: ci-${{ github.ref }}
