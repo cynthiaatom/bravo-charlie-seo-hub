@@ -9,7 +9,10 @@ export function signatureBase(
   return `${timestamp}\n${method.toUpperCase()}\n${route}\n${body}`;
 }
 
-export async function hmacSha256Hex(secret: string, message: string): Promise<string> {
+export async function hmacSha256Hex(
+  secret: string,
+  message: string,
+): Promise<string> {
   const key = await crypto.subtle.importKey(
     "raw",
     encoder.encode(secret),
@@ -17,8 +20,14 @@ export async function hmacSha256Hex(secret: string, message: string): Promise<st
     false,
     ["sign"],
   );
-  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(message));
-  return [...new Uint8Array(signature)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode(message),
+  );
+  return [...new Uint8Array(signature)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 export async function verifyWpSignature(input: {
@@ -32,7 +41,9 @@ export async function verifyWpSignature(input: {
   signature: string;
   nowMs?: number;
 }): Promise<boolean> {
-  if (input.siteId !== input.expectedSiteId || !/^\d+$/.test(input.timestamp)) return false;
+  if (input.siteId !== input.expectedSiteId || !/^\d+$/.test(input.timestamp)) {
+    return false;
+  }
   const now = input.nowMs ?? Date.now();
   const ageMs = Math.abs(now - Number(input.timestamp) * 1000);
   if (ageMs > 5 * 60 * 1000) return false;
