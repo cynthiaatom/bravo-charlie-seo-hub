@@ -27,6 +27,10 @@ M1 intentionally has no generic remote WordPress execution endpoint. Future SEO 
 
 Bravo Charlie tables are defined for both OpenSEO database backends: D1/SQLite and PostgreSQL. A focused schema-parity test guards table/column drift between the two definitions.
 
+## Verification gate
+
+PR #1 must pass formatting, type checks, tests, worker build, schema parity, and reviewed D1/PostgreSQL migrations before it leaves draft status.
+
 ## Follow-up
 
-After this draft PR is green, generate and commit Drizzle migrations for both backends, configure the Hub secret in the deployment environment, and connect the first controlled WordPress test site.
+After this draft PR is green, configure the Hub secret in the deployment environment and connect the first controlled WordPress test site.
