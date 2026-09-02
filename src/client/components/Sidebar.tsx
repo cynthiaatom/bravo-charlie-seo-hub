@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import {
+  agencyNavGroup,
   connectNavGroup,
   getProjectNavGroups,
 } from "@/client/navigation/items";
@@ -78,6 +79,7 @@ function SidebarNavLink({
 
 export function Sidebar({ projectId, onNavigate, onClose }: SidebarProps) {
   const navGroups = [
+    agencyNavGroup,
     ...(projectId ? getProjectNavGroups(projectId) : []),
     connectNavGroup,
   ];

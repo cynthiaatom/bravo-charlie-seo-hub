@@ -1,6 +1,7 @@
 import {
   Bookmark,
   Bot,
+  Building2,
   ClipboardCheck,
   Globe,
   LayoutDashboard,
@@ -68,6 +69,17 @@ const projectNavItems = [
     icon: MessageSquare,
   },
 ] as const;
+
+export const agencyNavGroup = {
+  label: "Bravo Charlie",
+  items: [
+    linkOptions({
+      to: "/clients" as const,
+      label: "Clients",
+      icon: Building2,
+    }),
+  ],
+};
 
 const aiNavItem = linkOptions({
   to: "/ai" as const,
