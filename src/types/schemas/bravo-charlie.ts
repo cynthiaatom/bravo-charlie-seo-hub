@@ -12,7 +12,9 @@ export const issueBravoCharlieRegistrationCodeSchema = z.object({
 
 export const wpRegistrationRequestSchema = z.object({
   protocol_version: z.literal("bcseo-hub-v1"),
-  registration_code: z.string().regex(/^BC-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}$/i),
+  registration_code: z
+    .string()
+    .regex(/^BC-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}$/i),
   site_id: z.string().uuid(),
   site_secret: z.string().min(32).max(512),
   site_secret_fingerprint: z.string().regex(/^[0-9a-f]{64}$/i),
@@ -31,18 +33,27 @@ export const wpHeartbeatSchema = z.object({
   site_name: z.string().trim().min(1).max(255),
   plugin_version: z.string().min(1).max(64),
   wordpress: z.string().max(64).optional(),
-  health: z.object({
-    score: z.number().int().min(0).max(100).optional(),
-    missing_descriptions: z.number().int().min(0).optional(),
-    missing_titles: z.number().int().min(0).optional(),
-    noindex_count: z.number().int().min(0).optional(),
-  }).passthrough().optional(),
+  health: z
+    .object({
+      score: z.number().int().min(0).max(100).optional(),
+      missing_descriptions: z.number().int().min(0).optional(),
+      missing_titles: z.number().int().min(0).optional(),
+      noindex_count: z.number().int().min(0).optional(),
+    })
+    .passthrough()
+    .optional(),
   cwv: z.record(z.string(), z.unknown()).optional(),
   "404_hits": z.number().int().min(0).optional(),
   generated_at: z.string().min(1).max(64),
 });
 
-export type CreateBravoCharlieClientInput = z.infer<typeof createBravoCharlieClientSchema>;
-export type IssueBravoCharlieRegistrationCodeInput = z.infer<typeof issueBravoCharlieRegistrationCodeSchema>;
-export type WpRegistrationRequestInput = z.infer<typeof wpRegistrationRequestSchema>;
+export type CreateBravoCharlieClientInput = z.infer<
+  typeof createBravoCharlieClientSchema
+>;
+export type IssueBravoCharlieRegistrationCodeInput = z.infer<
+  typeof issueBravoCharlieRegistrationCodeSchema
+>;
+export type WpRegistrationRequestInput = z.infer<
+  typeof wpRegistrationRequestSchema
+>;
 export type WpHeartbeatInput = z.infer<typeof wpHeartbeatSchema>;
