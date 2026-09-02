@@ -11,7 +11,10 @@ function fromBase64(input: string): Uint8Array {
 function toBase64Url(bytes: Uint8Array): string {
   let raw = "";
   for (const byte of bytes) raw += String.fromCharCode(byte);
-  return btoa(raw).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  return btoa(raw)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
 }
 
 async function importVaultKey(base64UrlKey: string): Promise<CryptoKey> {
@@ -19,19 +22,37 @@ async function importVaultKey(base64UrlKey: string): Promise<CryptoKey> {
   if (bytes.length !== 32) {
     throw new Error("BCSEO_SITE_SECRET_KEY must decode to exactly 32 bytes");
   }
-  return crypto.subtle.importKey("raw", bytes, { name: "AES-GCM" }, false, ["encrypt", "decrypt"]);
+  return crypto.subtle.importKey(
+    "raw",
+    bytes,
+    { name: "AES-GCM" },
+    false,
+    ["encrypt", "decrypt"],
+  );
 }
 
-export async function encryptSiteSecret(secret: string, base64UrlKey: string): Promise<string> {
+export async function encryptSiteSecret(
+  secret: string,
+  base64UrlKey: string,
+): Promise<string> {
   const key = await importVaultKey(base64UrlKey);
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoder.encode(secret));
+  const encrypted = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    key,
+    encoder.encode(secret),
+  );
   return `v1.${toBase64Url(iv)}.${toBase64Url(new Uint8Array(encrypted))}`;
 }
 
-export async function decryptSiteSecret(ciphertext: string, base64UrlKey: string): Promise<string> {
+export async function decryptSiteSecret(
+  ciphertext: string,
+  base64UrlKey: string,
+): Promise<string> {
   const [version, ivPart, dataPart] = ciphertext.split(".");
-  if (version !== "v1" || !ivPart || !dataPart) throw new Error("Unsupported site-secret ciphertext");
+  if (version !== "v1" || !ivPart || !dataPart) {
+    throw new Error("Unsupported site-secret ciphertext");
+  }
   const key = await importVaultKey(base64UrlKey);
   const decrypted = await crypto.subtle.decrypt(
     { name: "AES-GCM", iv: fromBase64(ivPart) },
